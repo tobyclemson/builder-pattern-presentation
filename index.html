@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<!--
+    Google HTML5 slide template
+
+    Authors: Luke Mahé (code)
+             Marcin Wichary (code and design)
+
+             Dominic Mazzoni (browser compatibility)
+             Charles Chen (ChromeVox support)
+
+    URL: http://code.google.com/p/html5slides/
+-->
+
+<html>
+  <head>
+    <title>Test Data Generation using the Builder Pattern</title>
+    <meta charset='utf-8'>
+    <script src='javascript/slides.js'></script>
+    <script src='javascript/prettify.js'></script>
+    <link rel="stylesheet" type="text/css" href="stylesheets/overrides.css"/>
+  </head>
+  <body style='display: none'>
+
+    <section class='slides layout-regular template-default'>
+
+      <article class='front-page'>
+        <h1>Test Data Generation using the Builder Pattern</h1>
+        <p>Toby Clemson</p>
+      </article>
+
+      <article>
+        <h2>Section Transition</h2>
+      </article>
+
+      <article>
+        <h3>Normal Slide</h3>
+        <ul class='build'>
+          <li>Bullet</li>
+          <li>Points</li>
+        </ul>
+      </article>
+
+      <article>
+        <h3>Some Code</h3>
+        <h5>Subtitle</h5>
+        <pre class="prettyprint">
+computeProvider = ck.data.providerBuilder()
+  .computeNextGen()
+  .withRegion('DFW')
+  .build();
+autoscaleProvider = ck.data.providerBuilder()
+  .autoscale()
+  .withRegion('DFW')
+  .build();
+        </pre>
+      </article>
+
+    </section>
+
+  </body>
+</html>
