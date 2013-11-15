@@ -62,14 +62,14 @@
 describe('ck.data.autoscale.Policy', function () {
   it('is editable for scheduled policy', function () {
     var policy;
-    policy = new ck.data.autoscale.Policy({ 'type', 'schedule' });
+    policy = new ck.data.autoscale.Policy({ 'type': 'schedule' });
     expect(policy.isEditable()).toBe(true);
   });
 
   it('is not editable for non-scheduled policy', function () {
     var policy;
     policy = new ck.data.autoscale.Policy({
-      'type', 'some-other-type'
+      'type': 'some-other-type'
     });
     expect(policy.isEditable()).toBe(false);
   });
@@ -162,17 +162,87 @@ describe('ck.files.files.View', function () {
         </ul>
       </article>
 
-      <article>
+      <article class="smaller">
         <h3>What's the solution? | The Builder Pattern</h3>
-        <pre>
-
-        </pre>
-
+        <pre style="font-size: 22px; line-height: 22px;">var thing = new ns.ThingBuilder()
+  .withFirstProperty('some-property')
+  .withSecondProperty(32568)
+  .withNestedObject(new ns.NestedObjectBuilder().build())
+  .build();</pre>
+        <ul>
+            <li>A <b>builder</b> is a companion object to an object you need to construct.</li>
+            <li>It <b>accumulates state</b>:</li>
+            <ul>
+                <li><code>with</code> methods are used to collect each piece of state</li>
+                <li>the <code>build</code> method constructs the target object after all state has been collected.</li>
+            </ul>
+            <li><b>Nested objects</b> can have their own builders.</li>
+            <li>It can <b>contain default values</b> for properties.</li>
+        </ul>
       </article>
 
+      <article>
+        <h3 style="font-size: 26px;">What's the solution? | The Builder Pattern | Application</h3>
+        <h4>Before</h4>
+        <pre style="font-size: 16px; line-height: 16px;">storageProvider = new ck.data.Provider({
+  id: storageProviderId,
+  'serviceType': ck.data.Providers.ServiceType.FILES,
+  'serviceRegion': ck.data.Provider.Region.DFW,
+  'accessAllowed': true
+});
+container = new ck.data.files.Container({
+  'id': ck.data.files.Container.getUniqueId(providerId, containerName),
+  'name': containerName,
+  'count': 15,
+  'bytes': 32568
+});
+spyOn(container, 'getProvider').andReturn(storageProvider);</pre>
+        <h4>After</h4>
+        <pre style="font-size: 16px; line-height: 16px;">storageProvider = ck.data.providerBuilder()
+  .files()
+  .build();
+container = ck.data.files.containerBuilder()
+  .withProvider(storageProvider)
+  .build();</pre>
+      </article>
 
+      <article>
+        <h3 style="font-size: 26px;">What's the solution? | The Builder Pattern | Implementation</h3>
+        <pre style="font-size: 16px; line-height: 16px;">/**
+ * @constructor
+ * @param {object} initialProperties
+ */
+ck.data.ProviderBuilder = ck.utility.createBuilder(
+  ck.data.Provider,
+  'provider',
+  {
+    'serviceType': ck.data.Providers.ServiceType.COMPUTE,
+    'serviceName': ck.data.Providers.ServiceName.Compute.NEXTGEN,
+    'serviceRegion': ck.data.Provider.Region.SYD,
+    'accessAllowed': true
+  }
+);
 
+/**
+ * @return {ck.data.ProviderBuilder}
+ */
+ck.data.ProviderBuilder.prototype.autoscale = function () {
+  return this.withProperties({
+    'serviceType': ck.data.Providers.ServiceType.AUTOSCALE,
+    'serviceName': ck.data.Providers.ServiceName.Autoscale.AUTOSCALE
+  });
+};
+
+/**
+ * @return {ck.data.ProviderBuilder}
+ */
+ck.data.ProviderBuilder.prototype.asDefaultProvider = function() {
+  return this.withExtension(function (provider) {
+    spyOn(provider, 'isDefaultProvider').andReturn(true);
+  });
+};
+</pre>
+      </article>
     </section>
-
   </body>
 </html>
