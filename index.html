@@ -25,37 +25,107 @@
     <section class='slides layout-regular template-default'>
 
       <article class='front-page'>
-        <h1>Test Data Generation using the Builder Pattern</h1>
+        <h1>Test Data Generation <br/>using the Builder Pattern</h1>
         <p>Toby Clemson</p>
       </article>
 
       <article>
-        <h2>Section Transition</h2>
+        <h2>What's the problem?</h2>
       </article>
 
       <article>
-        <h3>Normal Slide</h3>
+        <h3>What's the problem?</h3>
         <ul class='build'>
-          <li>Bullet</li>
-          <li>Points</li>
+          <li>
+              When a system is <b>simple and contained</b>, instantiating <b>test data</b>
+              directly <b>in the test</b> is manageable.
+          </li>
+          <li>
+              As the <b>system grows</b>, the <b>amount of data</b> that has to be
+              instantiated <b>grows</b> with it.
+          </li>
+          <li>
+              At some point, <b>abstractions</b> are needed to
+              <b>keep test suites maintainable</b>.
+          </li>
+          <li>
+              These abstractions can help form a <b>test language</b>.
+          </li>
         </ul>
       </article>
 
       <article>
-        <h3>Some Code</h3>
-        <h5>Subtitle</h5>
-        <pre class="prettyprint">
-computeProvider = ck.data.providerBuilder()
-  .computeNextGen()
-  .withRegion('DFW')
-  .build();
-autoscaleProvider = ck.data.providerBuilder()
-  .autoscale()
-  .withRegion('DFW')
-  .build();
-        </pre>
+        <h3>What's the problem? | Simple Data Setup</h3>
+        <pre>goog.require('ck.data.autoscale.Policy');
+
+describe('ck.data.autoscale.Policy', function () {
+  it('is editable for scheduled policy', function () {
+    var policy;
+    policy = new ck.data.autoscale.Policy({ 'type', 'schedule' });
+    expect(policy.isEditable()).toBe(true);
+  });
+
+  it('is not editable for non-scheduled policy', function () {
+    var policy;
+    policy = new ck.data.autoscale.Policy({
+      'type', 'some-other-type'
+    });
+    expect(policy.isEditable()).toBe(false);
+  });
+});</pre>
       </article>
 
+      <article>
+        <h3>What's the problem? | Things Get Complex</h3>
+        <pre style="font-size: 11px; line-height: 11px;">goog.require('ck.files.files.View');
+goog.require('ck.data.files.Files');
+goog.require('ck.data.Provider');
+
+describe('ck.files.files.View', function () {
+  var storageProviderId, storageProvider, cdnProviderId, cdnProvider,
+      containerName, container, files;
+
+  beforeEach(function () {
+    setFixtures('&lt;div id="main"&gt;&lt;/div&gt;');
+
+    storageProviderId = 'abc123';
+    cdnProviderId = 'cdnp1';
+
+    storageProvider = new ck.data.Provider({
+        id: storageProviderId,
+        'serviceType': ck.data.Providers.ServiceType.FILES,
+        'serviceRegion': ck.data.Provider.Region.DFW,
+        'accessAllowed': true
+    });
+    cdnProvider = new ck.data.Provider({
+        id: cdnProviderId,
+        'serviceType': ck.data.Providers.ServiceType.FILES_CDN,
+        'serviceRegion': ck.data.Provider.Region.DFW,
+        'accessAllowed': true
+    });
+    addTestDependency(storageProvider, ck.data.Providers, providerId);
+    addTestDependency(new ck.data.Providers([cdnProvider, storageProvider]), ck.data.Providers);
+
+    containerName = 'Container';
+    container = new ck.data.files.Container({
+      'id': ck.data.files.Container.getUniqueId(providerId, containerName),
+      'name': containerName,
+      'count': 15,
+      'bytes': 32568
+    });
+    spyOn(container, 'getProvider').andReturn(storageProvider);
+    spyOn(container, 'getCDNProvider').andReturn(cdnProvider);
+
+    files = ck.data.files.Files();
+
+    spyOn(files, 'getModelById');
+    spyOn(files, 'setContainer').andCallThrough();
+    spyOn(files, 'getContainer').andReturn(container);
+  });
+
+  // ...
+});</pre>
+      </article>
     </section>
 
   </body>

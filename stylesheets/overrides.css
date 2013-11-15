@@ -1,3 +1,7 @@
+/* .slides.template-default > article { */
+/*   padding: 80px 90px; */
+/* } */
+
 .slides article .presenter-notes {
     display: none;
 }
